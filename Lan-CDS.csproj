@@ -112,6 +112,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Serial.cs" />
     <Compile Include="Transfer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -154,10 +155,6 @@
     <ProjectReference Include="..\..\..\Code Backup\Libraries\bitsharp\src\MonoTorrent\MonoTorrent.csproj">
       <Project>{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}</Project>
       <Name>MonoTorrent</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Code Backup\Libraries\Library\Library.csproj">
-      <Project>{985F68DF-E016-4CE7-81D0-AD8853C33D38}</Project>
-      <Name>Library</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Projects\uTorrentClient\Cleverscape.UTorrentClient\Cleverscape.UTorrentClient.WebClient\Cleverscape.UTorrentClient.WebClient.csproj">
       <Project>{208452E4-97DD-4FA0-A071-18B3219B4EDE}</Project>

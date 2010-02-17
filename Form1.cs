@@ -22,7 +22,7 @@ namespace Lan_CDS
 {
 	public partial class Form1 : Form
 	{
-		private string settings = "settings.save";
+		private string settings;
 
 		private BackgroundWorker bgUpdate;
 		private BackgroundWorker bgConnect;
@@ -30,6 +30,7 @@ namespace Lan_CDS
         private Dictionary<string,string> config;
 
 		private UTorrentWebClient webClient;
+		private bool online = false;
 
 		TorrentCollection torrentCollection;
 		Transfer tEngine;
@@ -44,6 +45,10 @@ namespace Lan_CDS
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
+			Serial s = new Serial();
+			config = File.Exists(settings) ? (Dictionary<string, string>)s.load(settings) : new Dictionary<string, string>();
+			config["path"] = config.ContainsKey("path") ? config["path"] : Environment.CurrentDirectory;
+			settings = Path.Combine(config["path"], "settings.data");
 			localTorrents = new List<string>();
 			remoteTorrents = new List<string>();
 
@@ -55,12 +60,11 @@ namespace Lan_CDS
             bgUpdate.DoWork += new DoWorkEventHandler(update);
             bgUpdate.RunWorkerCompleted += new RunWorkerCompletedEventHandler(updateComplete);
             bgUpdate.ProgressChanged += new ProgressChangedEventHandler(updateProgress);
-			Serial s = new Serial();
-			config = File.Exists(settings)?(Dictionary<string, string>)s.load(settings):new Dictionary<string,string>();
+			
+			
 			try
 			{
-				string path = @"C:\torrent";
-				tEngine = new Transfer(path);
+				tEngine = new Transfer(config["path"]);
 
 				tEngine.engine.TorrentRegistered += delegate(object o, MonoTorrent.Client.TorrentEventArgs ex)
 				{
@@ -92,7 +96,7 @@ namespace Lan_CDS
 			toolStripStatusLabel1.Text = "Connecting...";
 			bgConnect.RunWorkerAsync();
 
-			draw();
+			//draw();
 
 			System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 			//System.Timers.Timer timer = new System.Timers.Timer();
@@ -152,8 +156,6 @@ namespace Lan_CDS
 		#region Draw ListView
 		private void draw()
 		{
-			listView1.Items.Clear();
-
 			foreach (string hash in localTorrents)// local always has priority
 			{
 				if (remoteTorrents.Contains(hash))
@@ -197,8 +199,8 @@ namespace Lan_CDS
 		{
 			this.Text = "LAN-CDS: D:" + tEngine.engine.TotalDownloadSpeed.ToString() + " U:" + tEngine.engine.TotalUploadSpeed.ToString();
 
-			this.toolStripStatusLabel2.Text = tEngine.dhtStatus();
-			
+			//this.toolStripStatusLabel2.Text = tEngine.dhtStatus();
+
 			List<string> covered = new List<string>();
 
 			foreach (ListViewItem item in listView1.Items)
@@ -227,6 +229,7 @@ namespace Lan_CDS
 				}
 				covered.Add(hash);
 			}
+
 			foreach (string hash in localTorrents)
 			{
 				if (!covered.Contains(hash))
@@ -241,10 +244,11 @@ namespace Lan_CDS
 					}
 					else
 					{
-						listView1.Items.Add(defaultItem(manager.SavePath, manager.State.ToString() , hash, "Local"));
+						listView1.Items.Add(defaultItem(manager.SavePath, manager.State.ToString(), hash, "Local"));
 					}
 				}
 			}
+
 			foreach (string hash in remoteTorrents)
 			{
 				if (!covered.Contains(hash))
@@ -254,7 +258,6 @@ namespace Lan_CDS
 					listView1.Items.Add(defaultItem(torrent.Name, "", hash, "Remote"));
 				}
 			}
-
 		}
 		#endregion
 
@@ -283,6 +286,7 @@ namespace Lan_CDS
 		#endregion
 
 		#region Background Functions
+
 		private void connect(object sender, DoWorkEventArgs e)
 		{
 			try
@@ -291,27 +295,25 @@ namespace Lan_CDS
 				{
 					InputBox requestServer = new InputBox("Please input a sever IP");
 					requestServer.ShowDialog();
-					config["server"] = requestServer.data;
+					config["server"] = requestServer.server;
+					config["username"] = requestServer.user;
+					config["password"] = requestServer.pass;
 				}
-				if(!config.ContainsKey("username"))
-				{
-					InputBox requestServer = new InputBox("Please input a username");
-					requestServer.ShowDialog();
-					config["username"] = requestServer.data;
-				}
-
-				InputBox requestPass = new InputBox("Please input the Server pass");
-				requestPass.ShowDialog();
-				string password = requestPass.data;
-
-				webClient = new UTorrentWebClient(config["server"], config["username"], password);
-			}
-			catch
-			{
-				e.Result = "Connection Error";
 				
-				//e.Cancel = true;
+				webClient = new UTorrentWebClient(config["server"], config["username"], config["password"]);
+
+			}
+			catch(Exception ex)
+			{
+				Console.WriteLine( ex.StackTrace);
+				Console.WriteLine( ex.Message);
+				e.Result = "Connection Error";
 				//throw new IOException("Failed Connecting");
+			}
+			finally
+			{
+				// do something else if the connection works
+				online = true;
 			}
 		}
 
@@ -330,8 +332,11 @@ namespace Lan_CDS
 			{
 				//connection complete
 				//get torrents from server and update form list
-				toolStripStatusLabel1.Text = "Connected: Requesting List";
-				bgUpdate.RunWorkerAsync();
+				if (online)
+				{
+					toolStripStatusLabel1.Text = "Connected: Requesting List";
+					bgUpdate.RunWorkerAsync();
+				}
 			}
 		}
 
@@ -359,18 +364,28 @@ namespace Lan_CDS
 			}
 			else
 			{
-				toolStripStatusLabel1.Text = "Updating...";
-				try
+				if (online)
 				{
-					foreach (Cleverscape.UTorrentClient.WebClient.Torrent torrent in torrentCollection)
+					toolStripStatusLabel1.Text = "Updating...";
+					try
 					{
-						remoteTorrents.Add(torrent.Hash);
+						foreach (Cleverscape.UTorrentClient.WebClient.Torrent torrent in torrentCollection)
+						{
+							remoteTorrents.Add(torrent.Hash);
+						}
 					}
-					toolStripStatusLabel1.Text = "Ready";
+					catch (Exception ex)
+					{
+						MessageBox.Show(ex.StackTrace + "\n" + ex.Message);
+					}
+					finally
+					{
+						goOnline();
+					}
 				}
-				catch (Exception ex)
+				else
 				{
-					MessageBox.Show(ex.StackTrace + "\n" + ex.Message);
+					goOnline(false);
 				}
 			}
 		}
@@ -380,5 +395,41 @@ namespace Lan_CDS
 
 		}
 		#endregion
+
+		private void connectToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!online)
+			{
+				InputBox requestServer = new InputBox("Please input a sever IP");
+				requestServer.ShowDialog();
+				config["server"] = requestServer.server;
+				config["username"] = requestServer.user;
+				config["password"] = requestServer.pass;
+				bgConnect.RunWorkerAsync();
+			}
+		}
+
+		private void goOnline()
+		{
+			goOnline(true);
+		}
+
+		private void goOnline(bool online)
+		{
+			if (online)
+			{
+				this.online = true;
+				connectToolStripMenuItem.Enabled = false;
+				disconnectToolStripMenuItem.Enabled = true;
+				toolStripStatusLabel1.Text = "Online";
+			}
+			else
+			{
+				this.online = false;
+				connectToolStripMenuItem.Enabled = true;
+				disconnectToolStripMenuItem.Enabled = false;
+				toolStripStatusLabel1.Text = "Offline";
+			}
+		}
 	}
 }

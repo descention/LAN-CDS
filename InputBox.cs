@@ -11,7 +11,9 @@ namespace Lan_CDS
 {
     public partial class InputBox : Form
     {
-        public string data;
+        public string server;
+		public string user;
+		public string pass;
 
         public InputBox(string text)
         {
@@ -29,13 +31,14 @@ namespace Lan_CDS
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            data = textBox1.Text;
+            server = textBox1.Text;
+			user = textBox2.Text;
+			pass = textBox3.Text;
             this.Close();
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            data = String.Empty;
             this.Close();
         }
 
