@@ -1,0 +1,3 @@
+[submodule "Cleverscape.uTorrentClient.WebClient"]
+	path = Cleverscape.uTorrentClient.WebClient
+	url = ../Cleverscape.uTorrentClient.WebClient/
