@@ -51,21 +51,12 @@
     <Reference Include="System.ComponentModel.DataAnnotations">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -83,7 +74,6 @@
     <Compile Include="InputBox.Designer.cs">
       <DependentUpon>InputBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="MiddleGround.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -156,7 +146,7 @@
       <Project>{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}</Project>
       <Name>MonoTorrent</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Projects\uTorrentClient\Cleverscape.UTorrentClient\Cleverscape.UTorrentClient.WebClient\Cleverscape.UTorrentClient.WebClient.csproj">
+    <ProjectReference Include="Cleverscape.uTorrentClient.WebClient\Cleverscape.UTorrentClient.WebClient.csproj">
       <Project>{208452E4-97DD-4FA0-A071-18B3219B4EDE}</Project>
       <Name>Cleverscape.UTorrentClient.WebClient</Name>
     </ProjectReference>

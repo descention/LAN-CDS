@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoTorrent", "..\..\..\Cod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoTorrent.Dht", "..\..\..\Code Backup\Libraries\bitsharp\src\MonoTorrent.Dht\MonoTorrent.Dht.csproj", "{7A2A7E73-FD43-4171-AA34-DA413D35459E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cleverscape.UTorrentClient.WebClient", "..\..\..\Code Backup\Libraries\Cleverscape.UTorrentClient.WebClient\Cleverscape.UTorrentClient.WebClient.csproj", "{208452E4-97DD-4FA0-A071-18B3219B4EDE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cleverscape.UTorrentClient.WebClient", "Cleverscape.uTorrentClient.WebClient\Cleverscape.UTorrentClient.WebClient.csproj", "{208452E4-97DD-4FA0-A071-18B3219B4EDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
