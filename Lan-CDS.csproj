@@ -57,6 +57,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -145,6 +146,10 @@
     <ProjectReference Include="..\..\..\Code Backup\Libraries\bitsharp\src\MonoTorrent\MonoTorrent.csproj">
       <Project>{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}</Project>
       <Name>MonoTorrent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\Plugins.csproj">
+      <Project>{D858E6DD-B098-4FF2-AD25-99BEB97C7F6B}</Project>
+      <Name>Plugins</Name>
     </ProjectReference>
     <ProjectReference Include="Cleverscape.uTorrentClient.WebClient\Cleverscape.UTorrentClient.WebClient.csproj">
       <Project>{208452E4-97DD-4FA0-A071-18B3219B4EDE}</Project>

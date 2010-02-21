@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoTorrent.Dht", "..\..\..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cleverscape.UTorrentClient.WebClient", "Cleverscape.uTorrentClient.WebClient\Cleverscape.UTorrentClient.WebClient.csproj", "{208452E4-97DD-4FA0-A071-18B3219B4EDE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugins", "..\Plugins\Plugins.csproj", "{D858E6DD-B098-4FF2-AD25-99BEB97C7F6B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,12 @@ Global
 		{208452E4-97DD-4FA0-A071-18B3219B4EDE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{208452E4-97DD-4FA0-A071-18B3219B4EDE}.Stats|Any CPU.ActiveCfg = Release|Any CPU
 		{208452E4-97DD-4FA0-A071-18B3219B4EDE}.Stats|Any CPU.Build.0 = Release|Any CPU
+		{D858E6DD-B098-4FF2-AD25-99BEB97C7F6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D858E6DD-B098-4FF2-AD25-99BEB97C7F6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D858E6DD-B098-4FF2-AD25-99BEB97C7F6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D858E6DD-B098-4FF2-AD25-99BEB97C7F6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D858E6DD-B098-4FF2-AD25-99BEB97C7F6B}.Stats|Any CPU.ActiveCfg = Release|Any CPU
+		{D858E6DD-B098-4FF2-AD25-99BEB97C7F6B}.Stats|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

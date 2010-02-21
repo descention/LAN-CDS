@@ -10,7 +10,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 using System.IO;
-using System.Timers;
+//using System.Timers;
+using System.Reflection;
+
 using MonoTorrent.Client;
 using MonoTorrent.Common;
 
@@ -18,53 +20,67 @@ using Cleverscape.UTorrentClient.WebClient;
 
 using Library;
 
+using Lan_CDS.Plugins;
+
 namespace Lan_CDS
 {
 	public partial class Form1 : Form
 	{
-		private string settings;
+		private string basePath;
+		private string settingsFile;
+		private string pluginPath;
 
-		private BackgroundWorker bgUpdate;
-		private BackgroundWorker bgConnect;
-
-        private Dictionary<string,string> config;
+		private Dictionary<string, string> config;
 
 		private UTorrentWebClient webClient;
 		private bool online = false;
-
 		TorrentCollection torrentCollection;
+		private BackgroundWorker bgUpdate;
+		private BackgroundWorker bgConnect;
+		
 		Transfer tEngine;
 
 		List<string> localTorrents;
 		List<string> remoteTorrents;
 
+		List<IPlugin> plugins = new List<IPlugin>();
+		
+		#region Form Events
 		public Form1()
 		{
 			InitializeComponent();
+			
 		}
-
+		
 		private void Form1_Load(object sender, EventArgs e)
 		{
 			Serial s = new Serial();
-			config = File.Exists(settings) ? (Dictionary<string, string>)s.load(settings) : new Dictionary<string, string>();
-			config["path"] = config.ContainsKey("path") ? config["path"] : Environment.CurrentDirectory;
-			settings = Path.Combine(config["path"], "settings.data");
+			basePath = Environment.CurrentDirectory;
+			pluginPath = Path.Combine(basePath, "Plugins");
+			settingsFile = Path.Combine(basePath, "settings.data");
+			config = File.Exists(settingsFile) ? (Dictionary<string, string>)s.load(settingsFile) : new Dictionary<string, string>();
+			
+			// init torrent lists
 			localTorrents = new List<string>();
 			remoteTorrents = new List<string>();
 
+			loadPlugins();
+
+			// create background connection worker
 			bgConnect = new BackgroundWorker();
 			bgConnect.DoWork += new DoWorkEventHandler(connect);
 			bgConnect.RunWorkerCompleted += new RunWorkerCompletedEventHandler(connectComplete);
 			
+			// create background update worker
 			bgUpdate = new BackgroundWorker();
             bgUpdate.DoWork += new DoWorkEventHandler(update);
             bgUpdate.RunWorkerCompleted += new RunWorkerCompletedEventHandler(updateComplete);
             bgUpdate.ProgressChanged += new ProgressChangedEventHandler(updateProgress);
 			
-			
+			// create torrent engine and load local files
 			try
 			{
-				tEngine = new Transfer(config["path"]);
+				tEngine = new Transfer(basePath);
 
 				tEngine.engine.TorrentRegistered += delegate(object o, MonoTorrent.Client.TorrentEventArgs ex)
 				{
@@ -86,20 +102,21 @@ namespace Lan_CDS
 
 				tEngine.loadFastResume();
 				tEngine.engine.StartAll();
+				
 
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex.Data);
-				throw new Exception("Error with file IO");
+				throw new Exception();
 			}
+
+			// begin connection
 			toolStripStatusLabel1.Text = "Connecting...";
 			bgConnect.RunWorkerAsync();
-
-			//draw();
-
+			
+			// prepare regular updater for ui.
 			System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
-			//System.Timers.Timer timer = new System.Timers.Timer();
 			
 			timer.Interval = 1000;
 			//timer.AutoReset = false;
@@ -112,7 +129,9 @@ namespace Lan_CDS
 				timer.Start();
 			};
 
+			// start regular ui updater
 			timer.Start();
+
 		}
 
 		private void itemDoubleClick(object sender, EventArgs e)
@@ -143,7 +162,7 @@ namespace Lan_CDS
 			try
 			{
 				Serial s = new Serial();
-				s.save(config, "settings.save");
+				s.save(config,settingsFile);
 				tEngine.stopDHT();
 				tEngine.saveFastResume(tEngine.managerCollection);
 			}
@@ -152,6 +171,7 @@ namespace Lan_CDS
 				MessageBox.Show(ex.StackTrace + "\n" + ex.Message);
 			}
 		}
+		#endregion
 
 		#region Draw ListView
 		private void draw()
@@ -262,6 +282,7 @@ namespace Lan_CDS
 		#endregion
 
 		#region Reference Torrent
+
 		private MonoTorrent.Common.Torrent localTorrentByHash(string hash)
 		{
 			foreach (TorrentManager manager in tEngine.managerCollection)
@@ -285,7 +306,7 @@ namespace Lan_CDS
 		}
 		#endregion
 
-		#region Background Functions
+		#region WebClient Functions
 
 		private void connect(object sender, DoWorkEventArgs e)
 		{
@@ -301,19 +322,16 @@ namespace Lan_CDS
 				}
 				
 				webClient = new UTorrentWebClient(config["server"], config["username"], config["password"]);
-
+				if (webClient == null)
+					throw new Exception("Not Connected");
+				online = true;
 			}
 			catch(Exception ex)
 			{
 				Console.WriteLine( ex.StackTrace);
 				Console.WriteLine( ex.Message);
 				e.Result = "Connection Error";
-				//throw new IOException("Failed Connecting");
-			}
-			finally
-			{
-				// do something else if the connection works
-				online = true;
+				online = false;
 			}
 		}
 
@@ -336,6 +354,10 @@ namespace Lan_CDS
 				{
 					toolStripStatusLabel1.Text = "Connected: Requesting List";
 					bgUpdate.RunWorkerAsync();
+				}
+				else
+				{
+					toolStripStatusLabel1.Text = "Offline";
 				}
 			}
 		}
@@ -394,7 +416,7 @@ namespace Lan_CDS
 		{
 
 		}
-		#endregion
+		
 
 		private void connectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -429,6 +451,43 @@ namespace Lan_CDS
 				connectToolStripMenuItem.Enabled = true;
 				disconnectToolStripMenuItem.Enabled = false;
 				toolStripStatusLabel1.Text = "Offline";
+			}
+		}
+		
+		#endregion
+
+		private void loadPlugins()
+		{
+			if (!Directory.Exists(pluginPath))
+				return;
+
+			Assembly asm;
+
+			string[] files = Directory.GetFiles(pluginPath,"*.dll");
+			foreach (string filePath in files)
+			{
+				try
+				{
+					asm = Assembly.LoadFile(filePath);
+					if (asm != null)
+					{
+						foreach (Type type in asm.GetTypes())
+						{
+							if (type.IsAbstract == false)
+							{
+								IPlugin b = type.InvokeMember(null,
+														   BindingFlags.CreateInstance,
+														   null, null, null) as IPlugin;
+								plugins.Add(b);
+								pluginsToolStripMenuItem.DropDownItems.Add(b.ToolItem);
+							}
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					MessageBox.Show(e.Message);
+				}
 			}
 		}
 	}
