@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Lan-CDS")]
+[assembly: AssemblyTitle("Cleverscape.UTorrentClient.WebClient")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Descention.net")]
-[assembly: AssemblyProduct("Lan-CDS")]
-[assembly: AssemblyCopyright("Copyright © Descention.net 2010")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("Cleverscape.UTorrentClient.WebClient")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9d2cd347-49c1-4ef6-83bc-f6e89cbbb46e")]
+[assembly: Guid("33bc87d8-7467-4eb5-9796-a46e38665b66")]
 
 // Version information for an assembly consists of the following four values:
 //
