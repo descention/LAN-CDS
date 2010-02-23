@@ -9,3 +9,6 @@ Required libraries:
 *MonoTorrent.Dht
 *Cleverscape.UTorrentClient (included)
 
+To use this application:
+Start uTorrent with one or more torrents added.
+configure the web login preferences at 
