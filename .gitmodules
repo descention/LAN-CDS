@@ -1,7 +1,10 @@
 [submodule "Cleverscape.uTorrentClient.WebClient"]
 	path = ./Cleverscape.uTorrentClient.WebClient
 	url = git://github.com/descention/Cleverscape.uTorrentClient.WebClient.git
-[submodule "Mundorff.Lan-CDS.Plugins"]
-	path = ./Plugins
-[submodule "Mundorff.Lan-CDS.Launcher"]
-	path = ./Launcher
+
+# I have no url for these yet.
+#	
+#[submodule "Mundorff.Lan-CDS.Plugins"]
+#	path = ./Plugins
+#[submodule "Mundorff.Lan-CDS.Launcher"]
+#	path = ./Launcher
