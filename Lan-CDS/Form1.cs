@@ -85,7 +85,8 @@ namespace Lan_CDS
 				tEngine.engine.TorrentRegistered += delegate(object o, MonoTorrent.Client.TorrentEventArgs ex)
 				{
 					localTorrents.Add(ex.TorrentManager.InfoHash.ToHex());
-					//ex.TorrentManager.
+					Peer p = new Peer("", new Uri("tcp://"+config["server"]));
+					MessageBox.Show(ex.TorrentManager.Torrent.Comment);
 				};
 				
 				foreach (TorrentManager manager in tEngine.managerCollection)
@@ -314,7 +315,7 @@ namespace Lan_CDS
 			{
 				if (!config.ContainsKey("server"))
 				{
-					InputBox requestServer = new InputBox("Please input a sever IP");
+					InputBox requestServer = new InputBox();
 					requestServer.ShowDialog();
 					config["server"] = requestServer.server;
 					config["username"] = requestServer.user;
@@ -422,7 +423,7 @@ namespace Lan_CDS
 		{
 			if (!online)
 			{
-				InputBox requestServer = new InputBox("Please input a sever IP");
+				InputBox requestServer = new InputBox();
 				requestServer.ShowDialog();
 				config["server"] = requestServer.server;
 				config["username"] = requestServer.user;
@@ -479,7 +480,7 @@ namespace Lan_CDS
 														   BindingFlags.CreateInstance,
 														   null, null, null) as IPlugin;
 								plugins.Add(b);
-								pluginsToolStripMenuItem.DropDownItems.Add(b.ToolItem);
+								//pluginsToolStripMenuItem.DropDownItems.Add(b.ToolItem);
 							}
 						}
 					}

@@ -15,6 +15,11 @@ namespace Lan_CDS
 		public string user;
 		public string pass;
 
+		public InputBox()
+		{
+			InitializeComponent();
+		}
+
         public InputBox(string text)
         {
             InitializeComponent();

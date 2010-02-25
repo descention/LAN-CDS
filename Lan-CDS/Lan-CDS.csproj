@@ -12,6 +12,7 @@
     <AssemblyName>Lan-CDS</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,7 +25,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -139,11 +139,11 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Code Backup\Libraries\bitsharp\src\MonoTorrent.Dht\MonoTorrent.Dht.csproj">
+    <ProjectReference Include="..\..\..\..\Code Backup\Libraries\bitsharp\src\MonoTorrent.Dht\MonoTorrent.Dht.csproj">
       <Project>{7A2A7E73-FD43-4171-AA34-DA413D35459E}</Project>
       <Name>MonoTorrent.Dht</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Code Backup\Libraries\bitsharp\src\MonoTorrent\MonoTorrent.csproj">
+    <ProjectReference Include="..\..\..\..\Code Backup\Libraries\bitsharp\src\MonoTorrent\MonoTorrent.csproj">
       <Project>{411A9E0E-FDC6-4E25-828A-0C2CD1CD96F8}</Project>
       <Name>MonoTorrent</Name>
     </ProjectReference>
@@ -151,7 +151,7 @@
       <Project>{D858E6DD-B098-4FF2-AD25-99BEB97C7F6B}</Project>
       <Name>Plugins</Name>
     </ProjectReference>
-    <ProjectReference Include="Cleverscape.uTorrentClient.WebClient\Cleverscape.UTorrentClient.WebClient.csproj">
+    <ProjectReference Include="..\Cleverscape.uTorrentClient.WebClient\Cleverscape.UTorrentClient.WebClient.csproj">
       <Project>{208452E4-97DD-4FA0-A071-18B3219B4EDE}</Project>
       <Name>Cleverscape.UTorrentClient.WebClient</Name>
     </ProjectReference>

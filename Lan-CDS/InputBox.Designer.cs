@@ -61,7 +61,7 @@
 			this.okButton.Location = new System.Drawing.Point(37, 103);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
-			this.okButton.TabIndex = 2;
+			this.okButton.TabIndex = 4;
 			this.okButton.Text = "Submit";
 			this.okButton.UseVisualStyleBackColor = true;
 			this.okButton.Click += new System.EventHandler(this.okButton_Click);
@@ -72,7 +72,7 @@
 			this.cancelButton.Location = new System.Drawing.Point(142, 103);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
-			this.cancelButton.TabIndex = 3;
+			this.cancelButton.TabIndex = 5;
 			this.cancelButton.Text = "Cancel";
 			this.cancelButton.UseVisualStyleBackColor = true;
 			this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
@@ -82,7 +82,7 @@
 			this.textBox2.Location = new System.Drawing.Point(91, 38);
 			this.textBox2.Name = "textBox2";
 			this.textBox2.Size = new System.Drawing.Size(152, 20);
-			this.textBox2.TabIndex = 5;
+			this.textBox2.TabIndex = 2;
 			// 
 			// label2
 			// 
@@ -100,7 +100,7 @@
 			this.textBox3.Name = "textBox3";
 			this.textBox3.PasswordChar = '*';
 			this.textBox3.Size = new System.Drawing.Size(152, 20);
-			this.textBox3.TabIndex = 7;
+			this.textBox3.TabIndex = 3;
 			// 
 			// label3
 			// 

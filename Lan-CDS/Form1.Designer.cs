@@ -38,11 +38,11 @@
 			this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.pluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
 			this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-			this.pluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
 			this.SuspendLayout();
@@ -117,6 +117,12 @@
 			this.exitToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
 			this.exitToolStripMenuItem.Text = "Exit";
 			// 
+			// pluginsToolStripMenuItem
+			// 
+			this.pluginsToolStripMenuItem.Name = "pluginsToolStripMenuItem";
+			this.pluginsToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+			this.pluginsToolStripMenuItem.Text = "Plugins";
+			// 
 			// contextMenuStrip1
 			// 
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
@@ -136,18 +142,14 @@
 			// toolStripStatusLabel1
 			// 
 			this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-			this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
+			this.toolStripStatusLabel1.Size = new System.Drawing.Size(36, 17);
+			this.toolStripStatusLabel1.Text = "blank";
 			// 
 			// toolStripStatusLabel2
 			// 
 			this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-			this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
-			// 
-			// pluginsToolStripMenuItem
-			// 
-			this.pluginsToolStripMenuItem.Name = "pluginsToolStripMenuItem";
-			this.pluginsToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
-			this.pluginsToolStripMenuItem.Text = "Plugins";
+			this.toolStripStatusLabel2.Size = new System.Drawing.Size(36, 17);
+			this.toolStripStatusLabel2.Text = "blank";
 			// 
 			// Form1
 			// 
