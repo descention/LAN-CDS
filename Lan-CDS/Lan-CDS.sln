@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoTorrent", "..\..\..\..\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoTorrent.Dht", "..\..\..\..\Code Backup\Libraries\bitsharp\src\MonoTorrent.Dht\MonoTorrent.Dht.csproj", "{7A2A7E73-FD43-4171-AA34-DA413D35459E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Launcher", "..\Launcher\Launcher.csproj", "{674C6059-095C-40E7-A3D2-A66C92616400}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,12 @@ Global
 		{7A2A7E73-FD43-4171-AA34-DA413D35459E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7A2A7E73-FD43-4171-AA34-DA413D35459E}.Stats|Any CPU.ActiveCfg = Release|Any CPU
 		{7A2A7E73-FD43-4171-AA34-DA413D35459E}.Stats|Any CPU.Build.0 = Release|Any CPU
+		{674C6059-095C-40E7-A3D2-A66C92616400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{674C6059-095C-40E7-A3D2-A66C92616400}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{674C6059-095C-40E7-A3D2-A66C92616400}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{674C6059-095C-40E7-A3D2-A66C92616400}.Release|Any CPU.Build.0 = Release|Any CPU
+		{674C6059-095C-40E7-A3D2-A66C92616400}.Stats|Any CPU.ActiveCfg = Release|Any CPU
+		{674C6059-095C-40E7-A3D2-A66C92616400}.Stats|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

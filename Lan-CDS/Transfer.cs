@@ -51,18 +51,17 @@ namespace Lan_CDS
 			
 			this.managerCollection = new List<TorrentManager>();
 			this.defaultSettings = new TorrentSettings(50, 100, 100000, 100000, false);
-			defaultSettings.UseDht = true;
+			defaultSettings.UseDht = false;
 			defaultSettings.EnablePeerExchange = true;
 			this.startDHT();
 
-
+			
 		}
 
 		public void AddTorrent(string path)
 		{
 			Torrent torrent = Torrent.Load(path);
 			TorrentManager manager = new TorrentManager(torrent, downloadsPath, defaultSettings);
-			manager.Settings.EnablePeerExchange = true;
 			engine.Register(manager);
 			managerCollection.Add(manager);
 		}
@@ -72,37 +71,9 @@ namespace Lan_CDS
 			List<MonoTorrentCollection<string>> announces = new List<MonoTorrentCollection<string>>();
 			announces.Add(new MonoTorrentCollection<string>() { });
 			TorrentManager manager = new TorrentManager(InfoHash.FromHex(hash), downloadsPath, defaultSettings, torrentsPath, announces);
-			manager.Settings.EnablePeerExchange = true;
-			engine.Register(manager);
-			managerCollection.Add(manager);
-			manager.PeerConnected += delegate(object o, PeerConnectionEventArgs e)
-			{
-				Console.WriteLine(e.ToString());
-			};
-
-			return manager;
-		}
-
-		public TorrentManager AddMagnet(string magnet)
-		{
-			List<MonoTorrentCollection<string>> announces = new List<MonoTorrentCollection<string>>();
-			announces.Add(new MonoTorrentCollection<string>() { });
-			TorrentManager manager = new TorrentManager(InfoHash.FromMagnetLink(magnet), downloadsPath, defaultSettings, torrentsPath, announces);
-			
 			engine.Register(manager);
 			managerCollection.Add(manager);
 			return manager;
-		}
-
-		public void HashTorrent(TorrentManager manager)
-		{
-			manager.PieceHashed += delegate(object o, PieceHashedEventArgs e)
-			{
-				int pieceIndex = e.PieceIndex;
-				int totalPieces = e.TorrentManager.Torrent.Pieces.Count;
-				double progress = ((double)pieceIndex / (double)totalPieces) * 100.0;
-			};
-			manager.HashCheck(false);
 		}
 
 		public void StopTorrent(TorrentManager manager)

@@ -34,7 +34,4 @@ a server, you will have a list of remote torrents available for download.
 Double-click an item in the “Remote” list to begin transfer of the torrent 
 data to your local client.
 
-NOTE: The transfer of metadata information is not automatic. This is a 
-known bug. Current workaround until the issue is resolved: add the lan-cds 
-client to the peer list in utorrent manually. Current port for the client 
-is 55555.
+NOTE: Current port for the client is 55555.

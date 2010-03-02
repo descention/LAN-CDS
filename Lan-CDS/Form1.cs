@@ -10,7 +10,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 using System.IO;
-//using System.Timers;
+using System.Diagnostics;
 using System.Reflection;
 
 using MonoTorrent.Client;
@@ -46,10 +46,10 @@ namespace Lan_CDS
 		List<IPlugin> plugins = new List<IPlugin>();
 		
 		#region Form Events
+		
 		public Form1()
 		{
 			InitializeComponent();
-			
 		}
 		
 		private void Form1_Load(object sender, EventArgs e)
@@ -85,10 +85,15 @@ namespace Lan_CDS
 				tEngine.engine.TorrentRegistered += delegate(object o, MonoTorrent.Client.TorrentEventArgs ex)
 				{
 					localTorrents.Add(ex.TorrentManager.InfoHash.ToHex());
-					Peer p = new Peer("", new Uri("tcp://"+config["server"]));
-					MessageBox.Show(ex.TorrentManager.Torrent.Comment);
+					// Add known uTorrent client (seeder/peer) just in case it's not known on the DHT network.
+					if(config.ContainsKey("server"))
+						ex.TorrentManager.AddPeers(new Peer("", new Uri("tcp://" + config["server"])));
+
+					//ex.TorrentManager.Engine.DhtEngine.GetPeers(ex.TorrentManager.InfoHash);
 				};
 				
+
+
 				foreach (TorrentManager manager in tEngine.managerCollection)
 				{
 					manager.PieceHashed += delegate(object o, PieceHashedEventArgs ex)
@@ -125,7 +130,7 @@ namespace Lan_CDS
 			{
 				timer.Stop();
 				// do list update
-				drawUpdate();
+				draw();
 				// start timer again
 				timer.Start();
 			};
@@ -141,12 +146,18 @@ namespace Lan_CDS
 			foreach (ListViewItem i in s)
 			{
 				string hash = (string)i.Tag;
-				if (torrentCollection.Contains(hash))
+				if (remoteTorrents.Contains(hash) && torrentCollection.Contains(hash))
 				{
 					Cleverscape.UTorrentClient.WebClient.Torrent torrent = getTorrentByHash(hash);
 
+					// add torrent hash to manager. 
+					// Manager automatically added to the ClientEngine (tEngine) TorrentManager List
 					TorrentManager manager = tEngine.AddHexHash(torrent.Hash);
+
+					// Automatically start torrent data transfer
 					manager.Start();
+
+					// Debug state change errors.
 					manager.TorrentStateChanged += delegate(object o, TorrentStateChangedEventArgs ex)
 					{
 						if (ex.NewState == TorrentState.Error)
@@ -154,6 +165,13 @@ namespace Lan_CDS
 							Console.WriteLine("Torrent Error: {0} : {1}",ex.TorrentManager.Error.Reason,ex.TorrentManager.Error.Exception);
 						}
 					};
+				}
+				else if (localTorrents.Contains(hash) && tEngine.getTorrentByHash(hash).Complete)
+				{
+					Process p = new Process();
+					p.StartInfo.FileName = Path.Combine( tEngine.getTorrentByHash(hash).SavePath, "Launcher.exe");
+					//p.StartInfo.Arguments = "-x";
+					p.Start();
 				}
 			}
 		}
@@ -165,6 +183,9 @@ namespace Lan_CDS
 				Serial s = new Serial();
 				s.save(config,settingsFile);
 				tEngine.stopDHT();
+				foreach (TorrentManager manager in tEngine.managerCollection)
+					if (manager.State == TorrentState.Metadata)
+						manager.Stop();
 				tEngine.saveFastResume(tEngine.managerCollection);
 			}
 			catch (Exception ex)
@@ -172,33 +193,10 @@ namespace Lan_CDS
 				MessageBox.Show(ex.StackTrace + "\n" + ex.Message);
 			}
 		}
+		
 		#endregion
 
 		#region Draw ListView
-		private void draw()
-		{
-			foreach (string hash in localTorrents)// local always has priority
-			{
-				if (remoteTorrents.Contains(hash))
-					remoteTorrents.Remove(hash);
-				TorrentManager manager = tEngine.getTorrentByHash(hash);
-				if (manager.HasMetadata)
-				{
-					MonoTorrent.Common.Torrent torrent = manager.Torrent;
-					listView1.Items.Add(defaultItem(torrent.Name, manager.State.ToString(), hash, "Local"));
-				}
-				else
-				{
-					listView1.Items.Add(defaultItem(manager.SavePath, manager.State.ToString(), hash, "Local"));
-				}
-			}
-			foreach (string hash in remoteTorrents)
-			{
-				Cleverscape.UTorrentClient.WebClient.Torrent torrent = getTorrentByHash(hash);
-
-				listView1.Items.Add(defaultItem(torrent.Name,"",hash, "Remote"));
-			}
-		}
 
 		private ListViewItem defaultItem(string name, string status, string hash, string groupStr)
 		{
@@ -216,11 +214,11 @@ namespace Lan_CDS
 			return item;
 		}
 
-		private void drawUpdate()
+		private void draw()
 		{
 			this.Text = "LAN-CDS: D:" + tEngine.engine.TotalDownloadSpeed.ToString() + " U:" + tEngine.engine.TotalUploadSpeed.ToString();
 
-			//this.toolStripStatusLabel2.Text = tEngine.dhtStatus();
+			//this.toolStripStatusLabel2.Text = tEngine.engine.DhtEngine.;
 
 			List<string> covered = new List<string>();
 
