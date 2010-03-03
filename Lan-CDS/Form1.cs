@@ -216,8 +216,8 @@ namespace Lan_CDS
 
 		private void draw()
 		{
-			this.Text = "LAN-CDS: D:" + tEngine.engine.TotalDownloadSpeed.ToString() + " U:" + tEngine.engine.TotalUploadSpeed.ToString();
-
+			this.Text = "LAN-CDS: D:" + Utilities.FormatFileSize(tEngine.engine.TotalDownloadSpeed) + " U:" + Utilities.FormatFileSize(tEngine.engine.TotalUploadSpeed);
+			
 			//this.toolStripStatusLabel2.Text = tEngine.engine.DhtEngine.;
 
 			List<string> covered = new List<string>();
@@ -231,11 +231,13 @@ namespace Lan_CDS
 						remoteTorrents.Remove(hash);
 					// updates on progress, status, availability
 					TorrentManager manager = tEngine.getTorrentByHash(hash);
-					string newText = manager.State.ToString() + ": " + manager.Progress.ToString() + "%";
+					string newText = manager.State.ToString() + ": " + Math.Round( manager.Progress,2).ToString() + "%";
 					if(newText != item.SubItems["progress"].Text)
 						item.SubItems["progress"].Text = newText;
 					if (item.Group == listView1.Groups["remote"])
 						item.Group = listView1.Groups["local"];
+					item.ToolTipText = manager.Peers.Seeds.ToString() + " friends have it. " + manager.Peers.Leechs.ToString() + " are getting it.";
+
 				}
 				else if (remoteTorrents.Contains(hash))
 				{
@@ -245,6 +247,7 @@ namespace Lan_CDS
 				else
 				{
 					// where the hell did it come from?!
+					item.Remove();
 				}
 				covered.Add(hash);
 			}
@@ -311,10 +314,12 @@ namespace Lan_CDS
 		{
 			try
 			{
-				if (!config.ContainsKey("server"))
+				if (!config.ContainsKey("server") || e.ToString() == "force")
 				{
 					InputBox requestServer = new InputBox();
 					requestServer.ShowDialog();
+					if (requestServer.server == null)
+						throw new Exception("No server specified");
 					config["server"] = requestServer.server;
 					config["username"] = requestServer.user;
 					config["password"] = requestServer.pass;
@@ -415,19 +420,30 @@ namespace Lan_CDS
 		{
 
 		}
-		
 
 		private void connectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (!online)
 			{
+				/*
 				InputBox requestServer = new InputBox();
 				requestServer.ShowDialog();
+				if (requestServer.server == null)
+					return;
 				config["server"] = requestServer.server;
 				config["username"] = requestServer.user;
 				config["password"] = requestServer.pass;
-				bgConnect.RunWorkerAsync();
+				*/
+				bgConnect.RunWorkerAsync("force");
 			}
+		}
+
+		private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			goOnline(false);
+			webClient.Dispose();
+			webClient = null;
+			remoteTorrents.Clear();
 		}
 
 		private void goOnline()
@@ -452,7 +468,7 @@ namespace Lan_CDS
 				toolStripStatusLabel1.Text = "Offline";
 			}
 		}
-		
+
 		#endregion
 
 		private void loadPlugins()
@@ -489,5 +505,7 @@ namespace Lan_CDS
 				}
 			}
 		}
+
+
 	}
 }

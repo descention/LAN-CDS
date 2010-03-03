@@ -33,7 +33,7 @@ namespace Launcher
 				pr.Start();
 				this.Close();
 			}
-			foreach (string file in Directory.GetFiles(Environment.CurrentDirectory, "*.exe", SearchOption.AllDirectories))
+			foreach (string file in Directory.GetFiles(Application.StartupPath, "*.exe", SearchOption.AllDirectories))
 			{
 				if (Path.GetFileName(file) != "Launcher.exe")
 				{
