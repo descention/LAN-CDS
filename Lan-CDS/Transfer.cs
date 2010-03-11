@@ -19,17 +19,25 @@ namespace Lan_CDS
 {
 	class Transfer
 	{
-		//private int dhtPort = 55554;
-		private int enginePort = 55555;
+		#region Public Vars
+
 		public ClientEngine engine;
+		public List<TorrentManager> managerCollection;
+
+		#endregion
+
+		#region Private Vars
+
+		private int enginePort = 55555;
+		DhtListener dhtListener;
+		private TorrentSettings defaultSettings;
 		string basePath;
 		string fastResumePath;
 		string dhtNodes;
 		string torrentsPath;
 		string downloadsPath;
-		public List<TorrentManager> managerCollection;
-		DhtListener dhtListener;
-		private TorrentSettings defaultSettings;
+
+		#endregion
 
 		public Transfer(string path)
 		{
@@ -55,9 +63,10 @@ namespace Lan_CDS
 			defaultSettings.EnablePeerExchange = true;
 			this.startDHT();
 
-			
+
 		}
 
+		#region Add Torrents
 		public void AddTorrent(string path)
 		{
 			Torrent torrent = Torrent.Load(path);
@@ -75,24 +84,9 @@ namespace Lan_CDS
 			managerCollection.Add(manager);
 			return manager;
 		}
+		#endregion
 
-		public void StopTorrent(TorrentManager manager)
-		{
-			manager.TorrentStateChanged += delegate(object o, TorrentStateChangedEventArgs e)
-			{
-				if (e.NewState == TorrentState.Stopping)
-				{
-
-				}
-				else if (e.NewState == TorrentState.Stopped)
-				{
-					engine.Unregister(manager);
-					manager.Dispose();
-				}
-			};
-			manager.Stop();
-		}
-
+		#region Save/Load Torrents
 		public void saveFastResume(List<TorrentManager> managers)
 		{
 			BEncodedList list = new BEncodedList();
@@ -140,6 +134,7 @@ namespace Lan_CDS
 				Directory.CreateDirectory(downloadsPath);
 			}
 		}
+		#endregion
 
 		public TorrentManager getTorrentByHash(string hash)
 		{
@@ -152,6 +147,7 @@ namespace Lan_CDS
 			return null;
 		}
 
+		#region DHT Stuff
 		public void startDHT()
 		{
 			dhtListener = new DhtListener (new IPEndPoint (IPAddress.Any, enginePort)); 
@@ -177,5 +173,7 @@ namespace Lan_CDS
 		{
 			return "DL:"+this.dhtListener.Status + " DE:" +  this.engine.DhtEngine.State.ToString();
 		}
+		#endregion
+
 	}
 }

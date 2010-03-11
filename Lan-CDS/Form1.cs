@@ -93,20 +93,6 @@ namespace Lan_CDS
 					if(config.ContainsKey("server"))
 						ex.TorrentManager.AddPeers(new Peer("", new Uri("tcp://" + config["server"])));
 				};
-				
-
-
-				foreach (TorrentManager manager in tEngine.managerCollection)
-				{
-					manager.PieceHashed += delegate(object o, PieceHashedEventArgs ex)
-					{
-						//updateRow(ex.TorrentManager.Torrent.InfoHash.ToHex(),ex.TorrentManager.Progress.ToString() + "%");
-					};
-					manager.TorrentStateChanged += delegate(object o, TorrentStateChangedEventArgs ex)
-					{
-						//updateRow(ex.TorrentManager.Torrent.InfoHash.ToHex(), ex.TorrentManager.Progress.ToString() + "%");
-					};
-				}
 
 				tEngine.loadFastResume();
 				tEngine.engine.StartAll();
