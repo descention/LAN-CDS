@@ -12,6 +12,7 @@ using System.Threading;
 using System.IO;
 using System.Diagnostics;
 using System.Reflection;
+using System.Net;
 
 using MonoTorrent.Client;
 using MonoTorrent.Common;
@@ -26,6 +27,7 @@ namespace Lan_CDS
 {
 	public partial class Form1 : Form
 	{
+		#region Private Variables
 		private string basePath;
 		private string settingsFile;
 		private string pluginPath;
@@ -34,7 +36,7 @@ namespace Lan_CDS
 
 		private UTorrentWebClient webClient;
 		private bool online = false;
-		TorrentCollection torrentCollection;
+		private TorrentCollection torrentCollection;
 		private BackgroundWorker bgUpdate;
 		private BackgroundWorker bgConnect;
 		
@@ -44,9 +46,10 @@ namespace Lan_CDS
 		List<string> remoteTorrents;
 
 		List<IPlugin> plugins = new List<IPlugin>();
-		
+		#endregion
+
 		#region Form Events
-		
+
 		public Form1()
 		{
 			InitializeComponent();
@@ -70,7 +73,8 @@ namespace Lan_CDS
 			bgConnect = new BackgroundWorker();
 			bgConnect.DoWork += new DoWorkEventHandler(connect);
 			bgConnect.RunWorkerCompleted += new RunWorkerCompletedEventHandler(connectComplete);
-			
+			bgConnect.WorkerSupportsCancellation = true;
+
 			// create background update worker
 			bgUpdate = new BackgroundWorker();
             bgUpdate.DoWork += new DoWorkEventHandler(update);
@@ -85,11 +89,9 @@ namespace Lan_CDS
 				tEngine.engine.TorrentRegistered += delegate(object o, MonoTorrent.Client.TorrentEventArgs ex)
 				{
 					localTorrents.Add(ex.TorrentManager.InfoHash.ToHex());
-					// Add known uTorrent client (seeder/peer) just in case it's not known on the DHT network.
+					// Add known uTorrent client (seeder/peer) as we don't use the DHT network.
 					if(config.ContainsKey("server"))
 						ex.TorrentManager.AddPeers(new Peer("", new Uri("tcp://" + config["server"])));
-
-					//ex.TorrentManager.Engine.DhtEngine.GetPeers(ex.TorrentManager.InfoHash);
 				};
 				
 
@@ -118,8 +120,7 @@ namespace Lan_CDS
 			}
 
 			// begin connection
-			toolStripStatusLabel1.Text = "Connecting...";
-			bgConnect.RunWorkerAsync();
+			tryConnect(null);
 			
 			// prepare regular updater for ui.
 			System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
@@ -185,7 +186,10 @@ namespace Lan_CDS
 				tEngine.stopDHT();
 				foreach (TorrentManager manager in tEngine.managerCollection)
 					if (manager.State == TorrentState.Metadata)
-						manager.Stop();
+					{
+						manager.Dispose();
+					}
+				
 				tEngine.saveFastResume(tEngine.managerCollection);
 			}
 			catch (Exception ex)
@@ -283,7 +287,7 @@ namespace Lan_CDS
 		}
 		#endregion
 
-		#region Reference Torrent
+		#region Find Torrent by Hash
 
 		private MonoTorrent.Common.Torrent localTorrentByHash(string hash)
 		{
@@ -314,13 +318,24 @@ namespace Lan_CDS
 		{
 			try
 			{
-				if (!config.ContainsKey("server") || e.ToString() == "force")
+				if (!config.ContainsKey("server") || e.Argument.ToString() == "force")
 				{
 					InputBox requestServer = new InputBox();
 					requestServer.ShowDialog();
 					if (requestServer.server == null)
 						throw new Exception("No server specified");
-					config["server"] = requestServer.server;
+					IPAddress address;
+					string host = requestServer.server.Split(':')[0];
+
+					if (!IPAddress.TryParse(host, out address))
+					{
+						string hostIP = Dns.GetHostAddresses(host)[0].ToString();
+						config["server"] = hostIP + ":" + requestServer.server.ToString().Split(':')[1];
+					}
+					else
+					{
+						config["server"] = requestServer.server;
+					}
 					config["username"] = requestServer.user;
 					config["password"] = requestServer.pass;
 				}
@@ -425,16 +440,7 @@ namespace Lan_CDS
 		{
 			if (!online)
 			{
-				/*
-				InputBox requestServer = new InputBox();
-				requestServer.ShowDialog();
-				if (requestServer.server == null)
-					return;
-				config["server"] = requestServer.server;
-				config["username"] = requestServer.user;
-				config["password"] = requestServer.pass;
-				*/
-				bgConnect.RunWorkerAsync("force");
+				
 			}
 		}
 
@@ -469,8 +475,23 @@ namespace Lan_CDS
 			}
 		}
 
+		private bool tryConnect(string arg)
+		{
+			toolStripStatusLabel1.Text = "Connecting...";
+			if (bgConnect.IsBusy)
+			{
+				bgConnect.CancelAsync();
+			}
+			else
+			{
+				bgConnect.RunWorkerAsync("force");
+			}
+			return false;
+		}
+
 		#endregion
 
+		#region Plugin System
 		private void loadPlugins()
 		{
 			if (!Directory.Exists(pluginPath))
@@ -505,7 +526,7 @@ namespace Lan_CDS
 				}
 			}
 		}
-
+		#endregion
 
 	}
 }
